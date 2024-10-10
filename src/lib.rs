@@ -1,4 +1,4 @@
-// Copyright 2022-2022 Tauri Programme within The Commons Conservancy
+// Copyright 2022-2024 Tauri Programme within The Commons Conservancy
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
@@ -131,10 +131,23 @@ impl GlobalHotKeyEvent {
         }
     }
 }
-
+#[cfg(not(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd"
+)))]
 pub struct GlobalHotKeyManager {
     platform_impl: platform_impl::GlobalHotKeyManager,
 }
+#[cfg(not(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd"
+)))]
 
 impl GlobalHotKeyManager {
     pub fn new() -> crate::Result<Self> {
@@ -159,5 +172,60 @@ impl GlobalHotKeyManager {
     pub fn unregister_all(&self, hotkeys: &[HotKey]) -> crate::Result<()> {
         self.platform_impl.unregister_all(hotkeys)?;
         Ok(())
+    }
+}
+#[cfg(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd"
+))]
+pub struct GlobalHotKeyManager {
+    platform_impl: platform_impl::GlobalHotKeyManager,
+}
+
+#[cfg(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd"
+))]
+impl GlobalHotKeyManager {
+    pub fn new() -> crate::Result<Self> {
+        Ok(Self {
+            platform_impl: platform_impl::GlobalHotKeyManager::new()?,
+        })
+    }
+
+    pub fn register(&self, hotkey: HotKey) -> crate::Result<()> {
+        self.platform_impl.register(hotkey)
+    }
+
+    pub fn unregister(&self, hotkey: HotKey) -> crate::Result<()> {
+        self.platform_impl.unregister(hotkey)
+    }
+
+    pub fn register_all(&self, hotkeys: &[HotKey]) -> crate::Result<()> {
+        self.platform_impl.register_all(hotkeys)?;
+        Ok(())
+    }
+
+    pub fn unregister_all(&self, hotkeys: &[HotKey]) -> crate::Result<()> {
+        self.platform_impl.unregister_all(hotkeys)?;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    fn assert_send<T: Send>() {}
+    fn assert_sync<T: Sync>() {}
+
+    #[test]
+    fn is_send_sync() {
+        assert_send::<super::GlobalHotKeyManager>();
+        assert_sync::<super::GlobalHotKeyManager>();
     }
 }
