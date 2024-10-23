@@ -131,67 +131,11 @@ impl GlobalHotKeyEvent {
         }
     }
 }
-#[cfg(not(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "openbsd",
-    target_os = "netbsd"
-)))]
-pub struct GlobalHotKeyManager {
-    platform_impl: platform_impl::GlobalHotKeyManager,
-}
-#[cfg(not(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "openbsd",
-    target_os = "netbsd"
-)))]
 
-impl GlobalHotKeyManager {
-    pub fn new() -> crate::Result<Self> {
-        Ok(Self {
-            platform_impl: platform_impl::GlobalHotKeyManager::new()?,
-        })
-    }
-
-    pub fn register(&self, hotkey: HotKey) -> crate::Result<()> {
-        self.platform_impl.register(hotkey)
-    }
-
-    pub fn unregister(&self, hotkey: HotKey) -> crate::Result<()> {
-        self.platform_impl.unregister(hotkey)
-    }
-
-    pub fn register_all(&self, hotkeys: &[HotKey]) -> crate::Result<()> {
-        self.platform_impl.register_all(hotkeys)?;
-        Ok(())
-    }
-
-    pub fn unregister_all(&self, hotkeys: &[HotKey]) -> crate::Result<()> {
-        self.platform_impl.unregister_all(hotkeys)?;
-        Ok(())
-    }
-}
-#[cfg(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "openbsd",
-    target_os = "netbsd"
-))]
 pub struct GlobalHotKeyManager {
     platform_impl: platform_impl::GlobalHotKeyManager,
 }
 
-#[cfg(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "openbsd",
-    target_os = "netbsd"
-))]
 impl GlobalHotKeyManager {
     pub fn new() -> crate::Result<Self> {
         Ok(Self {
